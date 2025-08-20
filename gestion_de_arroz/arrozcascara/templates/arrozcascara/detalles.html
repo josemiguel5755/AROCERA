@@ -1,0 +1,1592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrocera OSA - Representantes y Facturas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9f0 0%, #fff8e1 100%);
+            min-height: 100vh;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: #2d5016;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 2px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn.active .hamburger:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-btn.active .hamburger:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active .hamburger:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #2d5016 0%, #1a3009 100%);
+            color: white;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            z-index: 900;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo-text p {
+            font-size: 0.875rem;
+            color: #a3d977;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+            flex: 1;
+        }
+
+        .nav-menu li {
+            margin: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background: #3d6b1f;
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: #1a3009;
+        }
+
+        .user-profile {
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: #ffd700;
+            color: #2d5016;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .user-profile p {
+            font-size: 0.875rem;
+            color: #a3d977;
+        }
+
+        /* Mobile Overlay */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 800;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #2d5016, #ffd700);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            color: #1a3009;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text p {
+            color: #666;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* Filters */
+        .filters-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #1a3009;
+            font-size: 0.875rem;
+        }
+
+        .filter-select,
+        .filter-input {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .filter-select:focus,
+        .filter-input:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+
+        .filter-btn {
+            background: #2d5016;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 1.5rem;
+        }
+
+        .filter-btn:hover {
+            background: #3d6b1f;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #2d5016, #3d6b1f);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .table-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .invoices-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoices-table th,
+        .invoices-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .invoices-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .invoices-table td {
+            color: #6b7280;
+        }
+
+        .invoices-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        /* Representative Row Styling */
+        .representative-row {
+            background: linear-gradient(135deg, #f0f9f0, #fff8e1) !important;
+            font-weight: 600;
+            color: #1a3009 !important;
+        }
+
+        .representative-row td {
+            color: #1a3009 !important;
+            border-top: 2px solid #2d5016;
+        }
+
+        .representative-name {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .representative-icon {
+            font-size: 1.25rem;
+        }
+
+        /* Invoice Row Styling */
+        .invoice-row td {
+            padding-left: 2rem;
+        }
+
+        .invoice-number {
+            font-weight: 600;
+            color: #2d5016;
+        }
+
+        .client-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .client-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .client-cedula {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .sacks-badge {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #2d5016;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .variety-badge {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .date-info {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Estado Badge */
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-pendiente {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-pagado {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        /* Monto Styles */
+        .monto-value {
+            font-weight: 600;
+            color: #1a3009;
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-edit {
+            color: #3b82f6;
+        }
+
+        .btn-edit:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-delete {
+            color: #ef4444;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .btn-pagar {
+            color: #10b981;
+        }
+
+        .btn-pagar:hover {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: #1a3009;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #6b7280;
+        }
+
+        .modal-body {
+            margin-bottom: 2rem;
+        }
+
+        .modal-form .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-form label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: #1a3009;
+        }
+
+        .modal-form input,
+        .modal-form select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+
+        .modal-form input:focus,
+        .modal-form select:focus {
+            outline: none;
+            border-color: #2d5016;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #2d5016;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #3d6b1f;
+        }
+
+        .btn-secondary {
+            background: #e5e7eb;
+            color: #374151;
+        }
+
+        .btn-secondary:hover {
+            background: #d1d5db;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        /* No Data Message */
+        .no-data-message {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            color: #92400e;
+            text-align: center;
+        }
+
+        .no-data-message strong {
+            color: #78350f;
+        }
+
+        /* Notification Styles */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1100;
+            background: #10b981;
+            color: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .notification.info {
+            background: #3b82f6;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .notification-message {
+            white-space: pre-line;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .mobile-overlay.active {
+                display: block;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-stats {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select,
+            .filter-input {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .invoices-table {
+                font-size: 0.875rem;
+            }
+
+            .invoices-table th,
+            .invoices-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .invoice-row td {
+                padding-left: 1rem;
+            }
+
+            .header-stats {
+                gap: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0.5rem;
+            }
+
+            .page-header,
+            .filters-container,
+            .table-container {
+                padding: 1rem;
+            }
+
+            .header-text h1 {
+                font-size: 1.5rem;
+            }
+
+            .invoices-table th,
+            .invoices-table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.75rem;
+            }
+
+            .invoice-row td {
+                padding-left: 0.5rem;
+            }
+
+            .sacks-badge,
+            .variety-badge,
+            .status-badge {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.5rem;
+            }
+
+            .modal-content {
+                padding: 1rem;
+            }
+
+            .modal-title {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="mobile-menu-btn">
+        <span class="hamburger"></span>
+        <span class="hamburger"></span>
+        <span class="hamburger"></span>
+    </button>
+
+    <!-- Sidebar Menu -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">🌾</div>
+                <div class="logo-text">
+                    <h1>Arrocera OSA</h1>
+                    <p>Sistema de Facturación</p>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="#" class="nav-link">
+                <span class="nav-icon">🏠</span>
+                <span>Inicio</span>
+            </a></li>
+            <li><a href="{% url 'registrodefacturas' %}" class="nav-link">
+                <span class="nav-icon">📄</span>
+                <span>Facturas</span>
+            </a></li>
+
+            <li><a href="{% url 'detalles' %}" class="nav-link ">
+                <span class="nav-icon">📊</span>
+                <span>Rep. y Facturas</span>
+            </a></li>
+
+
+            <li><a href="{% url 'representantes' %}" class="nav-link">
+                <span class="nav-icon">👤</span>
+                <span>Registro Rep.</span>
+            </a></li>
+            <li><a href="{% url 'gestionderepresentantes' %}" class="nav-link">
+                <span class="nav-icon">👥</span>
+                <span>Gestión Rep.</span>
+            </a></li>
+            
+            
+            <li><a href="#" class="nav-link">
+                <span class="nav-icon">⚙️</span>
+                <span>Configuración</span>
+            </a></li>
+        </ul>
+
+         <li><a href="{% url 'dashboard' %}" class="nav-link active">
+                <span class="nav-icon">📈</span>
+                <span>Dashboard</span>
+            </a></li>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">A</div>
+                <p>Admin Usuario</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+
+    <!-- Modal para editar factura -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Editar Factura</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editForm" class="modal-form">
+                    <input type="hidden" id="editInvoiceId" name="id">
+                    <div class="form-group">
+                        <label for="editNumeroFactura">Número de Factura</label>
+                        <input type="text" id="editNumeroFactura" name="numero_factura" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCedula">Cédula Cliente</label>
+                        <input type="text" id="editCedula" name="cedula" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editNombre">Nombre Cliente</label>
+                        <input type="text" id="editNombre" name="nombre_cliente" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCantidadSacos">Cantidad de Sacos</label>
+                        <input type="number" id="editCantidadSacos" name="cantidad_sacos" min="1" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editRepresentante">Representante</label>
+                        <select id="editRepresentante" name="representante_id" required>
+                            <option value="">Seleccionar representante</option>
+                            {% for rep in representantes %}
+                            <option value="{{ rep.id }}">{{ rep.nombre_completo }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editFecha">Fecha</label>
+                        <input type="date" id="editFecha" name="fecha" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editVariedad">Variedad de Arroz</label>
+                        <select id="editVariedad" name="variedad" required>
+                            <option value="">Seleccionar variedad</option>
+                            <option value="Puita">Puita</option>
+                            <option value="Jaragua">Jaragua</option>
+                            <option value="Guri">Guri</option>
+                            <option value="Arroz Basmati">Arroz Basmati</option>
+                            <option value="Arroz Jazmín">Arroz Jazmín</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelEdit">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="saveEdit">Guardar Cambios</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para pagar factura -->
+    <div id="payModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Registrar Pago</h3>
+                <button class="modal-close" id="closePayModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="payForm" class="modal-form">
+                    <input type="hidden" id="payInvoiceId" name="id">
+                    <div class="form-group">
+                        <label for="payNumeroFactura">Número de Factura</label>
+                        <input type="text" id="payNumeroFactura" name="numero_factura" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="payNombreCliente">Nombre Cliente</label>
+                        <input type="text" id="payNombreCliente" name="nombre_cliente" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="payMonto">Monto a Pagar ($)</label>
+                        <input type="number" id="payMonto" name="monto" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="payFecha">Fecha de Pago</label>
+                        <input type="date" id="payFecha" name="fecha_pago" required>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="cancelPay">Cancelar</button>
+                <button type="button" class="btn btn-primary" id="confirmPay">Registrar Pago</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <div class="header-info">
+                    <div class="header-icon">📊</div>
+                    <div class="header-text">
+                        <h1>Representantes y Facturas</h1>
+                        <p>Vista detallada de representantes con sus facturas registradas</p>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <div class="stat-value">{{ total_representantes }}</div>
+                        <div class="stat-label">Representantes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ total_facturas }}</div>
+                        <div class="stat-label">Facturas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">{{ total_sacos }}</div>
+                        <div class="stat-label">Sacos</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- No Data Message -->
+        <div id="no-data-message" class="no-data-message" style="display: {% if not facturas_por_representante %}block{% else %}none{% endif %};">
+            <strong>⚠️ No hay facturas registradas</strong><br>
+            Para ver datos aquí, primero registra algunas facturas en el formulario principal.
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-container">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="filter-representative">Representante</label>
+                    <select id="filter-representative" class="filter-select">
+                        <option value="">Todos los representantes</option>
+                        {% for rep in representantes %}
+                        <option value="{{ rep.id }}" {% if rep.id|stringformat:"s" == request.GET.representante %}selected{% endif %}>{{ rep.nombre_completo }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-variety">Variedad</label>
+                    <select id="filter-variety" class="filter-select">
+                        <option value="">Todas las variedades</option>
+                        <option value="puita" {% if request.GET.variedad == "puita" %}selected{% endif %}>PUITA</option>
+                        <option value="Arroz Integral" {% if request.GET.variedad == "Arroz Integral" %}selected{% endif %}>Arroz Integral</option>
+                        <option value="Arroz Parboilizado" {% if request.GET.variedad == "Arroz Parboilizado" %}selected{% endif %}>Arroz Parboilizado</option>
+                        <option value="Arroz Basmati" {% if request.GET.variedad == "Arroz Basmati" %}selected{% endif %}>Arroz Basmati</option>
+                        <option value="Arroz Jazmín" {% if request.GET.variedad == "Arroz Jazmín" %}selected{% endif %}>Arroz Jazmín</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-date-from">Fecha Desde</label>
+                    <input type="date" id="filter-date-from" class="filter-input" value="{{ request.GET.fecha_desde }}">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-date-to">Fecha Hasta</label>
+                    <input type="date" id="filter-date-to" class="filter-input" value="{{ request.GET.fecha_hasta }}">
+                </div>
+                <div class="filter-group">
+                    <button id="apply-filters" class="filter-btn">🔍 Aplicar Filtros</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">Detalle de Representantes y Facturas</div>
+                <div class="table-count">{{ facturas.count }} registros</div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="invoices-table">
+                    <thead>
+                        <tr>
+                            <th>Representante / Factura</th>
+                            <th>Cliente</th>
+                            <th>Cédula Cliente</th>
+                            <th>Cantidad Sacos</th>
+                            <th>Variedad</th>
+                            <th>Monto</th>
+                            <th>Estado</th>
+                            <th>Fecha</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoices-tbody">
+                        {% for grupo in facturas_por_representante %}
+                        <!-- Representative header row -->
+                        <tr class="representative-row">
+                            <td colspan="9">
+                                <div class="representative-name">
+                                    <span class="representative-icon">👤</span>
+                                    <strong>{{ grupo.representante.nombre_completo }}</strong>
+                                    <span style="margin-left: 1rem; font-size: 0.875rem; opacity: 0.8;">
+                                        {{ grupo.facturas|length }} factura{{ grupo.facturas|length|pluralize }} • 
+                                        {{ grupo.total_sacos }} sacos
+                                    </span>
+                                </div>
+                            </td>
+                        </tr>
+                        
+                        <!-- Invoice rows for this representative -->
+                        {% for factura in grupo.facturas %}
+                        <tr class="invoice-row">
+                            <td>
+                                <span class="invoice-number">{{ factura.numero_factura }}</span>
+                            </td>
+                            <td>
+                                <div class="client-info">
+                                    <span class="client-name">{{ factura.nombre_cliente }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="client-cedula">{{ factura.cedula }}</span>
+                            </td>
+                            <td>
+                                <span class="sacks-badge">
+                                    📦 {{ factura.cantidad_sacos }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="variety-badge">{{ factura.variedad }}</span>
+                            </td>
+                            <td>
+                                <span class="monto-value">${{ factura.monto|default:"0.00" }}</span>
+                            </td>
+                            <td>
+                                <span class="status-badge status-{{ factura.estado|default:"pendiente" }}">
+                                    {{ factura.estado|default:"Pendiente"|title }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="date-info">{{ factura.fecha|date:"d/m/Y" }}</span>
+                            </td>
+                            <td>
+                                <div class="action-buttons">
+                                    <button class="btn-action btn-edit" data-id="{{ factura.id }}">✏️</button>
+                                    <button class="btn-action btn-delete" data-id="{{ factura.id }}">🗑️</button>
+                                    {% if factura.estado != 'pagado' %}
+                                    <button class="btn-action btn-pagar" data-id="{{ factura.id }}" data-numero="{{ factura.numero_factura }}" data-cliente="{{ factura.nombre_cliente }}">💵</button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state" style="display: {% if not facturas_por_representante %}block{% else %}none{% endif %};">
+                    <div class="empty-state-icon">📊</div>
+                    <h3>No hay datos para mostrar</h3>
+                    <p>No se encontraron facturas con los filtros aplicados</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const filterRepresentative = document.getElementById('filter-representative');
+        const filterVariety = document.getElementById('filter-variety');
+        const filterDateFrom = document.getElementById('filter-date-from');
+        const filterDateTo = document.getElementById('filter-date-to');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const editModal = document.getElementById('editModal');
+        const closeModal = document.getElementById('closeModal');
+        const cancelEdit = document.getElementById('cancelEdit');
+        const saveEdit = document.getElementById('saveEdit');
+        const editForm = document.getElementById('editForm');
+        const payModal = document.getElementById('payModal');
+        const closePayModal = document.getElementById('closePayModal');
+        const cancelPay = document.getElementById('cancelPay');
+        const confirmPay = document.getElementById('confirmPay');
+        const payForm = document.getElementById('payForm');
+        const noDataMessage = document.getElementById('no-data-message');
+        const emptyState = document.getElementById('empty-state');
+
+        // Mobile Menu Toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            mobileOverlay.classList.toggle('active');
+            mobileMenuBtn.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking overlay
+        mobileOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            mobileOverlay.classList.remove('active');
+            mobileMenuBtn.classList.remove('active');
+        });
+
+        // Close mobile menu when window is resized to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('open');
+                mobileOverlay.classList.remove('active');
+                mobileMenuBtn.classList.remove('active');
+            }
+        });
+
+        // Validate date range
+        function validateDateRange() {
+            const dateFrom = filterDateFrom.value;
+            const dateTo = filterDateTo.value;
+            
+            if (dateFrom && dateTo) {
+                const fromDate = new Date(dateFrom);
+                const toDate = new Date(dateTo);
+                
+                if (fromDate > toDate) {
+                    showNotification('La fecha "Desde" no puede ser mayor que la fecha "Hasta"', 'error');
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Filter functionality
+        applyFiltersBtn.addEventListener('click', () => {
+            if (!validateDateRange()) return;
+            
+            const repId = filterRepresentative.value;
+            const variety = filterVariety.value;
+            const dateFrom = filterDateFrom.value;
+            const dateTo = filterDateTo.value;
+            
+            // Crear objeto URLSearchParams para manejar los parámetros
+            const params = new URLSearchParams();
+            
+            if (repId) params.append('representante', repId);
+            if (variety) params.append('variedad', variety);
+            if (dateFrom) params.append('fecha_desde', dateFrom);
+            if (dateTo) params.append('fecha_hasta', dateTo);
+            
+            // Obtener la URL base (maneja correctamente subdirectorios)
+            const baseUrl = window.location.pathname;
+            
+            // Construir la nueva URL con parámetros
+            const newUrl = `${baseUrl}?${params.toString()}`;
+            
+            window.location.href = newUrl;
+        });
+
+        // Modal controls
+        closeModal.addEventListener('click', () => editModal.style.display = 'none');
+        cancelEdit.addEventListener('click', () => editModal.style.display = 'none');
+
+        closePayModal.addEventListener('click', () => payModal.style.display = 'none');
+        cancelPay.addEventListener('click', () => payModal.style.display = 'none');
+
+        // Save edited invoice
+        saveEdit.addEventListener('click', async () => {
+            const formData = new FormData(editForm);
+            const invoiceId = document.getElementById('editInvoiceId').value;
+            
+            // Validar campos antes de enviar
+            const cantidadSacos = formData.get('cantidad_sacos');
+            const representante = formData.get('representante_id');
+            
+            if (!cantidadSacos || isNaN(cantidadSacos)) {
+                showNotification('La cantidad de sacos debe ser un número válido', 'error');
+                return;
+            }
+
+            if (!representante) {
+                showNotification('Debe seleccionar un representante', 'error');
+                return;
+            }
+
+            if (!invoiceId) {
+                showNotification('ID de factura no válido', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/facturas/editar/${invoiceId}/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const contentType = response.headers.get('content-type');
+                
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Respuesta no es JSON:', text.substring(0, 500) + '...');
+                    throw new Error(`El servidor devolvió HTML en lugar de JSON. Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `Error HTTP ${response.status}`);
+                }
+
+                if (data.success) {
+                    showNotification(data.message || 'Factura actualizada correctamente', 'success');
+                    editModal.style.display = 'none';
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.error || 'Error al actualizar factura', 'error');
+                }
+            } catch (error) {
+                console.error('Error completo:', error);
+                showNotification('Error: ' + error.message, 'error');
+            }
+        });
+
+        // Registrar pago
+        confirmPay.addEventListener('click', async () => {
+            const formData = new FormData(payForm);
+            const invoiceId = document.getElementById('payInvoiceId').value;
+            const monto = formData.get('monto');
+            
+            if (!monto || isNaN(monto) || parseFloat(monto) <= 0) {
+                showNotification('El monto debe ser un número mayor a 0', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/facturas/pagar/${invoiceId}/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': getCookie('csrftoken'),
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                const contentType = response.headers.get('content-type');
+                if (!contentType || !contentType.includes('application/json')) {
+                    const text = await response.text();
+                    console.error('Respuesta no es JSON:', text.substring(0, 500) + '...');
+                    throw new Error(`El servidor devolvió HTML en lugar de JSON. Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || `Error HTTP ${response.status}`);
+                }
+
+                if (data.success) {
+                    showNotification(data.message || 'Pago registrado correctamente', 'success');
+                    payModal.style.display = 'none';
+                    setTimeout(() => location.reload(), 1500);
+                } else {
+                    showNotification(data.error || 'Error al registrar pago', 'error');
+                }
+            } catch (error) {
+                console.error('Error completo:', error);
+                showNotification('Error: ' + error.message, 'error');
+            }
+        });
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === editModal) {
+                editModal.style.display = 'none';
+            }
+            if (e.target === payModal) {
+                payModal.style.display = 'none';
+            }
+        });
+
+        // Delete invoice
+        document.querySelectorAll('.btn-delete').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                const invoiceId = this.getAttribute('data-id');
+                
+                if (!invoiceId) {
+                    showNotification('ID de factura no válido', 'error');
+                    return;
+                }
+                
+                if (!confirm('¿Estás seguro de que deseas eliminar esta factura?\nEsta acción no se puede deshacer.')) {
+                    return;
+                }
+
+                try {
+                    const response = await fetch(`/facturas/eliminar/${invoiceId}/`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken'),
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const contentType = response.headers.get('content-type');
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const text = await response.text();
+                        console.error('Respuesta no es JSON:', text.substring(0, 500) + '...');
+                        throw new Error(`El servidor devolvió HTML en lugar de JSON. Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || `Error HTTP ${response.status}`);
+                    }
+
+                    if (data.success) {
+                        showNotification(data.message || 'Factura eliminada correctamente', 'success');
+                        setTimeout(() => location.reload(), 1500);
+                    } else {
+                        showNotification(data.error || 'Error al eliminar factura', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error completo:', error);
+                    showNotification('Error: ' + error.message, 'error');
+                }
+            });
+        });
+
+        // Edit invoice
+        document.querySelectorAll('.btn-edit').forEach(btn => {
+            btn.addEventListener('click', async function(e) {
+                const invoiceId = this.getAttribute('data-id');
+                
+                if (!invoiceId) {
+                    showNotification('ID de factura no válido', 'error');
+                    return;
+                }
+                
+                try {
+                    const response = await fetch(`/facturas/obtener/${invoiceId}/`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const contentType = response.headers.get('content-type');
+                    
+                    if (!contentType || !contentType.includes('application/json')) {
+                        const text = await response.text();
+                        console.error('Respuesta no es JSON:', text.substring(0, 500) + '...');
+                        throw new Error(`El servidor devolvió HTML en lugar de JSON. Status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    
+                    if (!response.ok) {
+                        throw new Error(data.error || `Error HTTP ${response.status}`);
+                    }
+
+                    if (data.success) {
+                        // Fill form with invoice data
+                        document.getElementById('editInvoiceId').value = data.factura.id;
+                        document.getElementById('editNumeroFactura').value = data.factura.numero_factura || '';
+                        document.getElementById('editCedula').value = data.factura.cedula || '';
+                        document.getElementById('editNombre').value = data.factura.nombre_cliente || '';
+                        document.getElementById('editCantidadSacos').value = data.factura.cantidad_sacos || '';
+                        document.getElementById('editRepresentante').value = data.factura.representante_id || '';
+                        document.getElementById('editFecha').value = data.factura.fecha || '';
+                        document.getElementById('editVariedad').value = data.factura.variedad || '';
+                        
+                        // Show modal
+                        editModal.style.display = 'flex';
+                    } else {
+                        showNotification(data.error || 'Error al cargar factura', 'error');
+                    }
+                } catch (error) {
+                    console.error('Error completo:', error);
+                    showNotification('Error: ' + error.message, 'error');
+                }
+            });
+        });
+
+        // Pagar factura
+        document.querySelectorAll('.btn-pagar').forEach(btn => {
+            btn.addEventListener('click', function(e) {
+                const invoiceId = this.getAttribute('data-id');
+                const numeroFactura = this.getAttribute('data-numero');
+                const nombreCliente = this.getAttribute('data-cliente');
+                
+                if (!invoiceId) {
+                    showNotification('ID de factura no válido', 'error');
+                    return;
+                }
+                
+                // Fill pay form
+                document.getElementById('payInvoiceId').value = invoiceId;
+                document.getElementById('payNumeroFactura').value = numeroFactura;
+                document.getElementById('payNombreCliente').value = nombreCliente;
+                
+                // Set today's date as default
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('payFecha').value = today;
+                
+                // Show modal
+                payModal.style.display = 'flex';
+            });
+        });
+
+        // Initialize date filters with default values (last 30 days)
+        document.addEventListener('DOMContentLoaded', () => {
+            const today = new Date();
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+            
+            if (!filterDateTo.value) {
+                filterDateTo.value = today.toISOString().split('T')[0];
+            }
+            
+            if (!filterDateFrom.value) {
+                filterDateFrom.value = thirtyDaysAgo.toISOString().split('T')[0];
+            }
+
+            // Hide empty state messages if there are invoices
+            const hasInvoices = document.querySelectorAll('.invoice-row').length > 0;
+            
+            if (hasInvoices) {
+                if (noDataMessage) noDataMessage.style.display = 'none';
+                if (emptyState) emptyState.style.display = 'none';
+            }
+        });
+
+        // Notification System
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            
+            let icon = 'ℹ️';
+            if (type === 'success') icon = '✅';
+            if (type === 'error') icon = '❌';
+            
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-icon">${icon}</span>
+                    <span class="notification-message">${message}</span>
+                    <button class="notification-close">×</button>
+                </div>
+            `;
+
+            // Add to document
+            document.body.appendChild(notification);
+
+            // Close button functionality
+            notification.querySelector('.notification-close').addEventListener('click', () => {
+                notification.remove();
+            });
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Function to get CSRF token from cookies
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        console.log('JavaScript cargado correctamente');
+    </script>
+</body>
+</html>

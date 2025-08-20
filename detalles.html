@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrocera OSA - Representantes y Facturas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f0f9f0 0%, #fff8e1 100%);
+            min-height: 100vh;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 1rem;
+            left: 1rem;
+            z-index: 1000;
+            background: #2d5016;
+            border: none;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .hamburger {
+            width: 20px;
+            height: 2px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .mobile-menu-btn.active .hamburger:nth-child(1) {
+            transform: rotate(45deg) translate(5px, 5px);
+        }
+
+        .mobile-menu-btn.active .hamburger:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active .hamburger:nth-child(3) {
+            transform: rotate(-45deg) translate(7px, -6px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, #2d5016 0%, #1a3009 100%);
+            color: white;
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+            z-index: 900;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .logo-text h1 {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 0.25rem;
+        }
+
+        .logo-text p {
+            font-size: 0.875rem;
+            color: #a3d977;
+        }
+
+        /* Navigation */
+        .nav-menu {
+            list-style: none;
+            padding: 1rem 0;
+            flex: 1;
+        }
+
+        .nav-menu li {
+            margin: 0.25rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link.active {
+            background: #3d6b1f;
+        }
+
+        .nav-icon {
+            font-size: 1.25rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Sidebar Footer */
+        .sidebar-footer {
+            padding: 1.5rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            background: #1a3009;
+        }
+
+        .user-profile {
+            text-align: center;
+        }
+
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: #ffd700;
+            color: #2d5016;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.25rem;
+            margin: 0 auto 0.5rem;
+        }
+
+        .user-profile p {
+            font-size: 0.875rem;
+            color: #a3d977;
+        }
+
+        /* Mobile Overlay */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 800;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        /* Page Header */
+        .page-header {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .header-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, #2d5016, #ffd700);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+        }
+
+        .header-text h1 {
+            font-size: 2rem;
+            color: #1a3009;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-text p {
+            color: #666;
+        }
+
+        .header-stats {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d5016;
+        }
+
+        .stat-label {
+            font-size: 0.875rem;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+
+        /* Filters */
+        .filters-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .filters-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #1a3009;
+            font-size: 0.875rem;
+        }
+
+        .filter-select,
+        .filter-input {
+            padding: 0.75rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .filter-select:focus,
+        .filter-input:focus {
+            outline: none;
+            border-color: #2d5016;
+            box-shadow: 0 0 0 3px rgba(45, 80, 22, 0.1);
+        }
+
+        .filter-btn {
+            background: #2d5016;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 1.5rem;
+        }
+
+        .filter-btn:hover {
+            background: #3d6b1f;
+        }
+
+        /* Table Container */
+        .table-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .table-header {
+            background: linear-gradient(135deg, #2d5016, #3d6b1f);
+            color: white;
+            padding: 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .table-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        .invoices-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .invoices-table th,
+        .invoices-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .invoices-table th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .invoices-table td {
+            color: #6b7280;
+        }
+
+        .invoices-table tbody tr:hover {
+            background: #f9fafb;
+        }
+
+        /* Representative Row Styling */
+        .representative-row {
+            background: linear-gradient(135deg, #f0f9f0, #fff8e1) !important;
+            font-weight: 600;
+            color: #1a3009 !important;
+        }
+
+        .representative-row td {
+            color: #1a3009 !important;
+            border-top: 2px solid #2d5016;
+        }
+
+        .representative-name {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .representative-icon {
+            font-size: 1.25rem;
+        }
+
+        /* Invoice Row Styling */
+        .invoice-row td {
+            padding-left: 2rem;
+        }
+
+        .invoice-number {
+            font-weight: 600;
+            color: #2d5016;
+        }
+
+        .client-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+
+        .client-name {
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .client-cedula {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .sacks-badge {
+            background: linear-gradient(135deg, #ffd700, #ffb300);
+            color: #2d5016;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .variety-badge {
+            background: #e5e7eb;
+            color: #374151;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .date-info {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #6b7280;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: #374151;
+        }
+
+        /* No Data Message */
+        .no-data-message {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            color: #92400e;
+            text-align: center;
+        }
+
+        .no-data-message strong {
+            color: #78350f;
+        }
+
+        /* Notification Styles */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .notification-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin-left: auto;
+        }
+
+        .notification-message {
+            white-space: pre-line;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            .mobile-overlay.active {
+                display: block;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header-stats {
+                justify-content: center;
+                width: 100%;
+            }
+
+            .filters-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-select,
+            .filter-input {
+                min-width: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .invoices-table {
+                font-size: 0.875rem;
+            }
+
+            .invoices-table th,
+            .invoices-table td {
+                padding: 0.75rem 0.5rem;
+            }
+
+            .invoice-row td {
+                padding-left: 1rem;
+            }
+
+            .header-stats {
+                gap: 1rem;
+            }
+
+            .stat-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 0.5rem;
+            }
+
+            .page-header,
+            .filters-container,
+            .table-container {
+                padding: 1rem;
+            }
+
+            .header-text h1 {
+                font-size: 1.5rem;
+            }
+
+            .invoices-table th,
+            .invoices-table td {
+                padding: 0.5rem 0.25rem;
+                font-size: 0.75rem;
+            }
+
+            .invoice-row td {
+                padding-left: 0.5rem;
+            }
+
+            .sacks-badge,
+            .variety-badge {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Mobile Menu Button -->
+    <button id="mobile-menu-btn" class="mobile-menu-btn">
+        <span class="hamburger"></span>
+        <span class="hamburger"></span>
+        <span class="hamburger"></span>
+    </button>
+
+    <!-- Sidebar Menu -->
+    <nav id="sidebar" class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">
+                <div class="logo-icon">🌾</div>
+                <div class="logo-text">
+                    <h1>Arrocera OSA</h1>
+                    <p>Sistema de Facturación</p>
+                </div>
+            </div>
+        </div>
+
+        <ul class="nav-menu">
+            <li><a href="#" class="nav-link">
+                <span class="nav-icon">🏠</span>
+                <span>Inicio</span>
+            </a></li>
+            <li><a href="#" class="nav-link">
+                <span class="nav-icon">📄</span>
+                <span>Facturas</span>
+            </a></li>
+            <li><a href="#" class="nav-link">
+                <span class="nav-icon">👤</span>
+                <span>Registro Rep.</span>
+            </a></li>
+            <li><a href="#" class="nav-link">
+                <span class="nav-icon">👥</span>
+                <span>Gestión Rep.</span>
+            </a></li>
+            <li><a href="#" class="nav-link active">
+                <span class="nav-icon">📊</span>
+                <span>Rep. y Facturas</span>
+            </a></li>
+            <li><a href="#" class="nav-link">
+                <span class="nav-icon">📦</span>
+                <span>Inventario</span>
+            </a></li>
+            <li><a href="#" class="nav-link">
+                <span class="nav-icon">⚙️</span>
+                <span>Configuración</span>
+            </a></li>
+        </ul>
+
+        <div class="sidebar-footer">
+            <div class="user-profile">
+                <div class="user-avatar">A</div>
+                <p>Admin Usuario</p>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Overlay -->
+    <div id="mobile-overlay" class="mobile-overlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="page-header">
+            <div class="header-content">
+                <div class="header-info">
+                    <div class="header-icon">📊</div>
+                    <div class="header-text">
+                        <h1>Representantes y Facturas</h1>
+                        <p>Vista detallada de representantes con sus facturas registradas</p>
+                    </div>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-representatives">0</div>
+                        <div class="stat-label">Representantes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-invoices">0</div>
+                        <div class="stat-label">Facturas</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="total-sacks">0</div>
+                        <div class="stat-label">Sacos</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- No Data Message -->
+        <div id="no-data-message" class="no-data-message" style="display: none;">
+            <strong>⚠️ No hay facturas registradas</strong><br>
+            Para ver datos aquí, primero registra algunas facturas en el formulario principal.
+        </div>
+
+        <!-- Filters -->
+        <div class="filters-container">
+            <div class="filters-row">
+                <div class="filter-group">
+                    <label for="filter-representative">Representante</label>
+                    <select id="filter-representative" class="filter-select">
+                        <option value="">Todos los representantes</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-variety">Variedad</label>
+                    <select id="filter-variety" class="filter-select">
+                        <option value="">Todas las variedades</option>
+                        <option value="Arroz Blanco Premium">Arroz Blanco Premium</option>
+                        <option value="Arroz Integral">Arroz Integral</option>
+                        <option value="Arroz Parboilizado">Arroz Parboilizado</option>
+                        <option value="Arroz Basmati">Arroz Basmati</option>
+                        <option value="Arroz Jazmín">Arroz Jazmín</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label for="filter-date-from">Fecha Desde</label>
+                    <input type="date" id="filter-date-from" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <label for="filter-date-to">Fecha Hasta</label>
+                    <input type="date" id="filter-date-to" class="filter-input">
+                </div>
+                <div class="filter-group">
+                    <button id="apply-filters" class="filter-btn">🔍 Aplicar Filtros</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Table Container -->
+        <div class="table-container">
+            <div class="table-header">
+                <div class="table-title">Detalle de Representantes y Facturas</div>
+                <div class="table-count" id="table-count">0 registros</div>
+            </div>
+            
+            <div class="table-wrapper">
+                <table class="invoices-table">
+                    <thead>
+                        <tr>
+                            <th>Representante / Factura</th>
+                            <th>Cliente</th>
+                            <th>Cédula Cliente</th>
+                            <th>Cantidad Sacos</th>
+                            <th>Variedad</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="invoices-tbody">
+                        <!-- Data will be loaded here -->
+                    </tbody>
+                </table>
+                
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">📊</div>
+                    <h3>No hay datos para mostrar</h3>
+                    <p>No se encontraron facturas con los filtros aplicados</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global variables
+        let representatives = [];
+        let invoices = [];
+        let filteredData = [];
+
+        // DOM Elements
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobile-overlay');
+        const filterRepresentative = document.getElementById('filter-representative');
+        const filterVariety = document.getElementById('filter-variety');
+        const filterDateFrom = document.getElementById('filter-date-from');
+        const filterDateTo = document.getElementById('filter-date-to');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const invoicesTbody = document.getElementById('invoices-tbody');
+        const tableCount = document.getElementById('table-count');
+        const emptyState = document.getElementById('empty-state');
+        const noDataMessage = document.getElementById('no-data-message');
+        const totalRepresentatives = document.getElementById('total-representatives');
+        const totalInvoices = document.getElementById('total-invoices');
+        const totalSacks = document.getElementById('total-sacks');
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', () => {
+            loadData();
+            populateFilters();
+            renderTable();
+            updateStats();
+        });
+
+        // Mobile Menu Toggle
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            mobileOverlay.classList.toggle('active');
+            mobileMenuBtn.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking overlay
+        mobileOverlay.addEventListener('click', () => {
+            sidebar.classList.remove('open');
+            mobileOverlay.classList.remove('active');
+            mobileMenuBtn.classList.remove('active');
+        });
+
+        // Close mobile menu when window is resized to desktop
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                sidebar.classList.remove('open');
+                mobileOverlay.classList.remove('active');
+                mobileMenuBtn.classList.remove('active');
+            }
+        });
+
+        // Filter functionality
+        applyFiltersBtn.addEventListener('click', applyFilters);
+
+        // Load real data from localStorage
+function loadData() {
+    // Load representatives
+    const savedReps = localStorage.getItem('representatives');
+    if (savedReps) {
+        representatives = JSON.parse(savedReps);
+    } else {
+        // Default representatives with sample data
+        representatives = [
+            { cedula: '12345678', nombre: 'Juan Pérez García', direccion: 'Calle 123 #45-67, Barrio Centro, Bogotá', cantidadSacos: 460 },
+            { cedula: '87654321', nombre: 'María González López', direccion: 'Avenida 456 #78-90, Barrio Norte, Medellín', cantidadSacos: 840 },
+            { cedula: '11223344', nombre: 'Carlos Rodríguez Martínez', direccion: 'Carrera 789 #12-34, Barrio Sur, Cali', cantidadSacos: 780 }
+        ];
+        localStorage.setItem('representatives', JSON.stringify(representatives));
+    }
+
+    // Always load sample invoices for demonstration
+    invoices = [
+        {
+            numeroFactura: 'FAC-2024-001',
+            cedula: '900123456',
+            nombre: 'Supermercado El Ahorro',
+            cantidadSacos: '150',
+            representante: 'Juan Pérez García',
+            fecha: '2024-01-15',
+            variedad: 'Arroz Blanco Premium'
+        },
+        {
+            numeroFactura: 'FAC-2024-002',
+            cedula: '900234567',
+            nombre: 'Distribuidora La Cosecha',
+            cantidadSacos: '200',
+            representante: 'Juan Pérez García',
+            fecha: '2024-01-16',
+            variedad: 'Arroz Integral'
+        },
+        {
+            numeroFactura: 'FAC-2024-003',
+            cedula: '900345678',
+            nombre: 'Tienda Don Carlos',
+            cantidadSacos: '75',
+            representante: 'María González López',
+            fecha: '2024-01-17',
+            variedad: 'Arroz Parboilizado'
+        },
+        {
+            numeroFactura: 'FAC-2024-004',
+            cedula: '900456789',
+            nombre: 'Mercado Central',
+            cantidadSacos: '300',
+            representante: 'María González López',
+            fecha: '2024-01-18',
+            variedad: 'Arroz Blanco Premium'
+        },
+        {
+            numeroFactura: 'FAC-2024-005',
+            cedula: '900567890',
+            nombre: 'Almacén Los Granos',
+            cantidadSacos: '120',
+            representante: 'Carlos Rodríguez Martínez',
+            fecha: '2024-01-19',
+            variedad: 'Arroz Basmati'
+        },
+        {
+            numeroFactura: 'FAC-2024-006',
+            cedula: '900678901',
+            nombre: 'Cooperativa Agrícola',
+            cantidadSacos: '250',
+            representante: 'Carlos Rodríguez Martínez',
+            fecha: '2024-01-20',
+            variedad: 'Arroz Jazmín'
+        },
+        {
+            numeroFactura: 'FAC-2024-007',
+            cedula: '900789012',
+            nombre: 'Restaurante El Buen Sabor',
+            cantidadSacos: '80',
+            representante: 'Juan Pérez García',
+            fecha: '2024-01-21',
+            variedad: 'Arroz Integral'
+        },
+        {
+            numeroFactura: 'FAC-2024-008',
+            cedula: '900890123',
+            nombre: 'Hotel Plaza Mayor',
+            cantidadSacos: '180',
+            representante: 'María González López',
+            fecha: '2024-01-22',
+            variedad: 'Arroz Blanco Premium'
+        },
+        {
+            numeroFactura: 'FAC-2024-009',
+            cedula: '900901234',
+            nombre: 'Panadería San José',
+            cantidadSacos: '90',
+            representante: 'Carlos Rodríguez Martínez',
+            fecha: '2024-01-23',
+            variedad: 'Arroz Parboilizado'
+        },
+        {
+            numeroFactura: 'FAC-2024-010',
+            cedula: '900012345',
+            nombre: 'Cafetería Central',
+            cantidadSacos: '60',
+            representante: 'Juan Pérez García',
+            fecha: '2024-01-24',
+            variedad: 'Arroz Basmati'
+        },
+        {
+            numeroFactura: 'FAC-2024-011',
+            cedula: '900123457',
+            nombre: 'Minimarket La Esquina',
+            cantidadSacos: '110',
+            representante: 'María González López',
+            fecha: '2024-01-25',
+            variedad: 'Arroz Jazmín'
+        },
+        {
+            numeroFactura: 'FAC-2024-012',
+            cedula: '900234568',
+            nombre: 'Distribuidora Norte',
+            cantidadSacos: '320',
+            representante: 'Carlos Rodríguez Martínez',
+            fecha: '2024-01-26',
+            variedad: 'Arroz Blanco Premium'
+        },
+        {
+            numeroFactura: 'FAC-2024-013',
+            cedula: '900345679',
+            nombre: 'Supermercado La Plaza',
+            cantidadSacos: '95',
+            representante: 'Juan Pérez García',
+            fecha: '2024-01-27',
+            variedad: 'Arroz Integral'
+        },
+        {
+            numeroFactura: 'FAC-2024-014',
+            cedula: '900456780',
+            nombre: 'Restaurante Los Sabores',
+            cantidadSacos: '140',
+            representante: 'María González López',
+            fecha: '2024-01-28',
+            variedad: 'Arroz Parboilizado'
+        },
+        {
+            numeroFactura: 'FAC-2024-015',
+            cedula: '900567891',
+            nombre: 'Tienda Mi Barrio',
+            cantidadSacos: '85',
+            representante: 'Carlos Rodríguez Martínez',
+            fecha: '2024-01-29',
+            variedad: 'Arroz Basmati'
+        }
+    ];
+    
+    // Save sample data to localStorage
+    localStorage.setItem('invoices', JSON.stringify(invoices));
+    
+    filteredData = [...invoices];
+    
+    // Show notification that sample data was loaded
+    console.log('Datos cargados:', invoices.length, 'facturas');
+}
+
+        function populateFilters() {
+            // Populate representative filter
+            filterRepresentative.innerHTML = '<option value="">Todos los representantes</option>';
+            
+            // Get unique representatives from invoices
+            const uniqueReps = [...new Set(invoices.map(invoice => invoice.representante))];
+            uniqueReps.forEach(repName => {
+                const option = document.createElement('option');
+                option.value = repName;
+                option.textContent = repName;
+                filterRepresentative.appendChild(option);
+            });
+
+            // Set default date range (last 30 days)
+            const today = new Date();
+            const thirtyDaysAgo = new Date();
+            thirtyDaysAgo.setDate(today.getDate() - 30);
+            
+            filterDateTo.value = today.toISOString().split('T')[0];
+            filterDateFrom.value = thirtyDaysAgo.toISOString().split('T')[0];
+        }
+
+        function applyFilters() {
+            filteredData = invoices.filter(invoice => {
+                // Representative filter
+                if (filterRepresentative.value && invoice.representante !== filterRepresentative.value) {
+                    return false;
+                }
+
+                // Variety filter
+                if (filterVariety.value && invoice.variedad !== filterVariety.value) {
+                    return false;
+                }
+
+                // Date range filter
+                if (filterDateFrom.value && invoice.fecha < filterDateFrom.value) {
+                    return false;
+                }
+
+                if (filterDateTo.value && invoice.fecha > filterDateTo.value) {
+                    return false;
+                }
+
+                return true;
+            });
+
+            renderTable();
+            updateStats();
+        }
+
+        function renderTable() {
+            invoicesTbody.innerHTML = '';
+            
+            // Show/hide no data message
+            if (invoices.length === 0) {
+                noDataMessage.style.display = 'block';
+                emptyState.style.display = 'none';
+                invoicesTbody.parentElement.style.display = 'none';
+                return;
+            } else {
+                noDataMessage.style.display = 'none';
+            }
+
+            if (filteredData.length === 0) {
+                emptyState.style.display = 'block';
+                invoicesTbody.parentElement.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            invoicesTbody.parentElement.style.display = 'table';
+
+            // Group invoices by representative
+            const groupedData = {};
+            filteredData.forEach(invoice => {
+                if (!groupedData[invoice.representante]) {
+                    groupedData[invoice.representante] = [];
+                }
+                groupedData[invoice.representante].push(invoice);
+            });
+
+            // Render grouped data
+            Object.keys(groupedData).forEach(repName => {
+                const repInvoices = groupedData[repName];
+                
+                // Representative header row
+                const repRow = document.createElement('tr');
+                repRow.className = 'representative-row';
+                repRow.innerHTML = `
+                    <td colspan="6">
+                        <div class="representative-name">
+                            <span class="representative-icon">👤</span>
+                            <strong>${repName}</strong>
+                            <span style="margin-left: 1rem; font-size: 0.875rem; opacity: 0.8;">
+                                (${repInvoices.length} factura${repInvoices.length !== 1 ? 's' : ''})
+                            </span>
+                        </div>
+                    </td>
+                `;
+                invoicesTbody.appendChild(repRow);
+
+                // Invoice rows
+                repInvoices.forEach(invoice => {
+                    const invoiceRow = document.createElement('tr');
+                    invoiceRow.className = 'invoice-row';
+                    invoiceRow.innerHTML = `
+                        <td>
+                            <span class="invoice-number">${invoice.numeroFactura}</span>
+                        </td>
+                        <td>
+                            <div class="client-info">
+                                <span class="client-name">${invoice.nombre}</span>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="client-cedula">${invoice.cedula}</span>
+                        </td>
+                        <td>
+                            <span class="sacks-badge">
+                                📦 ${invoice.cantidadSacos}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="variety-badge">${invoice.variedad}</span>
+                        </td>
+                        <td>
+                            <span class="date-info">${formatDate(invoice.fecha)}</span>
+                        </td>
+                    `;
+                    invoicesTbody.appendChild(invoiceRow);
+                });
+            });
+
+            updateTableCount();
+        }
+
+        function updateTableCount() {
+            const repCount = Object.keys(filteredData.reduce((acc, invoice) => {
+                acc[invoice.representante] = true;
+                return acc;
+            }, {})).length;
+            
+            tableCount.textContent = `${repCount} representante${repCount !== 1 ? 's' : ''} • ${filteredData.length} factura${filteredData.length !== 1 ? 's' : ''}`;
+        }
+
+        function updateStats() {
+            const uniqueReps = Object.keys(filteredData.reduce((acc, invoice) => {
+                acc[invoice.representante] = true;
+                return acc;
+            }, {})).length;
+
+            const totalSacksCount = filteredData.reduce((sum, invoice) => sum + parseInt(invoice.cantidadSacos || 0), 0);
+
+            totalRepresentatives.textContent = uniqueReps;
+            totalInvoices.textContent = filteredData.length;
+            totalSacks.textContent = totalSacksCount.toLocaleString();
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        // Initialize filters on load
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        applyFilters();
+        showNotification('📊 Datos de prueba cargados: ' + invoices.length + ' facturas', 'success');
+    }, 500);
+});
+
+        // Auto-refresh data every 5 seconds to catch new invoices
+        setInterval(() => {
+            const currentInvoiceCount = invoices.length;
+            loadData();
+            if (invoices.length !== currentInvoiceCount) {
+                populateFilters();
+                applyFilters();
+                showNotification('Datos actualizados automáticamente', 'info');
+            }
+        }, 5000);
+
+        // Notification System
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existingNotification = document.querySelector('.notification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span class="notification-icon">${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                    <span class="notification-message">${message}</span>
+                    <button class="notification-close">×</button>
+                </div>
+            `;
+
+            // Add styles
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1100;
+                background: ${type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#3b82f6'};
+                color: white;
+                padding: 1rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+                max-width: 400px;
+                animation: slideIn 0.3s ease;
+            `;
+
+            // Add to document
+            document.body.appendChild(notification);
+
+            // Close button functionality
+            const closeBtn = notification.querySelector('.notification-close');
+            closeBtn.addEventListener('click', () => {
+                notification.remove();
+            });
+
+            // Auto remove after 3 seconds
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+
+// Function to clear sample data (optional)
+function clearSampleData() {
+    if (confirm('¿Estás seguro de que deseas eliminar todos los datos de prueba?\n\nEsta acción no se puede deshacer.')) {
+        localStorage.removeItem('invoices');
+        localStorage.removeItem('representatives');
+        location.reload();
+    }
+}
+
+// Add clear data button to header (optional)
+document.addEventListener('DOMContentLoaded', () => {
+    const headerActions = document.querySelector('.header-actions');
+    if (headerActions) {
+        const clearBtn = document.createElement('button');
+        clearBtn.innerHTML = '🗑️ Limpiar Datos';
+        clearBtn.className = 'btn-add';
+        clearBtn.style.background = '#ef4444';
+        clearBtn.onclick = clearSampleData;
+        headerActions.appendChild(clearBtn);
+    }
+});
+    </script>
+</body>
+</html>
