@@ -572,19 +572,33 @@
                 <span class="nav-icon">📄</span>
                 <span>Facturas</span>
             </a></li>
-            <li><a href="#" class="nav-link">
-                <span class="nav-icon">📦</span>
-                <span>Inventario</span>
+            <li><a href="{% url 'detalles' %}" class="nav-link ">
+                <span class="nav-icon">📊</span>
+                <span>Rep. y Facturas</span>
             </a></li>
-            <li><a href="#" class="nav-link">
+            
+            
+            <li><a href="{% url 'representantes' %}" class="nav-link">
+                <span class="nav-icon">👤</span>
+                <span>Registro Rep.</span>
+            </a></li>
+
+            <li><a href="{% url 'gestionderepresentantes' %}" class="nav-link  ">
                 <span class="nav-icon">👥</span>
-                <span>Clientes</span>
+                <span>Gestión Rep.</span>
             </a></li>
-            <li><a href="#" class="nav-link">
+
+             <li><a href="{% url 'dashboard' %}" class="nav-link ">
+                <span class="nav-icon">📈</span>
+                <span>Dashboard</span>
+            </a></li>
+
+
+            <!-- <li><a href="#" class="nav-link">
                 <span class="nav-icon">⚙️</span>
                 <span>Configuración</span>
             </a></li>
-        </ul>
+        </ul> -->
 
         <div class="sidebar-footer">
             <div class="user-profile">
@@ -710,8 +724,8 @@
                         <option value="Puita">PUITA</option>
                         <option value="Jaragua">JARAGUA</option>
                         <option value="Guri">GURI</option>
-                        <option value="Arroz Basmati">Arroz Basmati</option>
-                        <option value="Arroz Jazmín">Arroz Jazmín</option>
+                        <option value="Sabina">SABINA</option>
+                        <option value="Robusta">RUBUSTA</option>
                     </select>
                 </div>
 
